@@ -27,10 +27,8 @@ class DigitRecognizerApp:
         self.root.geometry("820x600")
         self.low_conf_threshold = 80.0  # % below which we ask user to confirm/correct
 
-
         self._ensure_dirs()
         self._ensure_dataset_exists()
-
 
         # --- Menu ---
         menubar = tk.Menu(root)
@@ -41,7 +39,6 @@ class DigitRecognizerApp:
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=root.quit)
         menubar.add_cascade(label="File", menu=filemenu)
-
 
         helpmenu = tk.Menu(menubar, tearoff=0)
         helpmenu.add_command(label="About", command=lambda: messagebox.showinfo(
@@ -81,14 +78,12 @@ class DigitRecognizerApp:
         self.status = tk.Label(root, text="Ready", bd=1, relief="sunken", anchor="w")
         self.status.pack(side="bottom", fill="x")
 
-
     # ------------------- Utilities -------------------
     def _ensure_dirs(self):
         os.makedirs("../models", exist_ok=True)
         os.makedirs("../data", exist_ok=True)
         os.makedirs(USER_IMG_DIR, exist_ok=True)
         os.makedirs(DRAW_SAVE_DIR, exist_ok=True)
-
 
     def _ensure_dataset_exists(self):
         """Create CSV if missing."""
@@ -109,14 +104,12 @@ class DigitRecognizerApp:
     def _status(self, msg):
         self.status.config(text=msg)
 
-
     # --- Preprocessing: convert any PIL image to 8x8 features like sklearn.digits (0..16, background≈0) ---
     def _image_to_features(self, pil_img: Image.Image) -> np.ndarray:
         # Grayscale, improve contrast a bit, resize to 8x8
         img = pil_img.convert("L")
         img = ImageOps.autocontrast(img)
         img = img.resize((8, 8), Image.LANCZOS)
-
 
         arr = np.asarray(img, dtype=np.float32)  # 0..255, white background
         # Scale to 0..16 and invert so background ≈ 0, strokes ≈ up to 16
@@ -125,14 +118,12 @@ class DigitRecognizerApp:
         arr16 = np.clip(arr16, 0.0, 16.0).reshape(1, -1)
         return arr16
 
-
     def _append_sample(self, features_1x64: np.ndarray, label: int):
         """Append a single labeled example to the CSV dataset."""
         sample = pd.DataFrame(features_1x64, columns=PIX_COLS)
         sample["label"] = label
         # Append without header
         sample.to_csv(CSV_FILE, mode="a", header=False, index=False)
-
 
     def _predict_with_conf(self, model, X_1x64: np.ndarray):
         pred = model.predict(X_1x64)[0]
@@ -143,7 +134,6 @@ class DigitRecognizerApp:
             except Exception:
                 conf = None
         return pred, conf
-
 
     def _load_model(self):
         if not os.path.exists(MODEL_FILE):
@@ -162,7 +152,6 @@ class DigitRecognizerApp:
             messagebox.showerror("Error", "CSV format invalid. Expect 64 feature columns + 'label'.")
             return
 
-
         X, y = df[PIX_COLS].values, df["label"].values
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, stratify=y, random_state=42
@@ -170,14 +159,11 @@ class DigitRecognizerApp:
         model = RandomForestClassifier(n_estimators=250, random_state=42, n_jobs=-1)
         model.fit(X_train, y_train)
 
-
         joblib.dump(model, MODEL_FILE)
         acc = accuracy_score(y_test, model.predict(X_test)) * 100.0
 
-
         self._status(f"Model trained (Accuracy: {acc:.2f}%)")
         self._log(f"Model trained successfully! Test Accuracy: {acc:.2f}%  | Samples: {len(df)}")
-
 
     def retrain_model(self):
         """Retrain on ALL data (no hold-out) — quick refresh after adding new labeled samples."""
@@ -189,12 +175,10 @@ class DigitRecognizerApp:
             messagebox.showerror("Error", "CSV format invalid. Expect 64 feature columns + 'label'.")
             return
 
-
         X, y = df[PIX_COLS].values, df["label"].values
         model = RandomForestClassifier(n_estimators=250, random_state=42, n_jobs=-1)
         model.fit(X, y)
         joblib.dump(model, MODEL_FILE)
-
 
         train_acc = model.score(X, y) * 100.0
         self._status(f"🔁 Retrained on {len(y)} samples (Training Acc: {train_acc:.2f}%)")
@@ -396,14 +380,12 @@ class DigitRecognizerApp:
         for p in file_paths:
             self._predict_and_learn_from_file(model, p)
 
-
     def _predict_and_learn_from_file(self, model, file_path: str):
         try:
             pil = Image.open(file_path)
         except Exception as e:
             self._log(f"Cannot open image '{file_path}': {e}")
             return
-
 
         feats = self._image_to_features(pil)
         pred, conf = self._predict_with_conf(model, feats)
