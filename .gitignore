@@ -1,0 +1,27 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+env/
+
+# Data files (CSV, datasets)
+data/
+
+# Model files
+models/
+
+# Prediction logs / outputs
+outputs/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+*.idea/
+*.sublime-project
+*.sublime-workspace
