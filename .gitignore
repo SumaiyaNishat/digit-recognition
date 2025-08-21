@@ -21,7 +21,6 @@ outputs/
 Thumbs.db
 
 # IDE/editor files
-.vscode/
 *.idea/
 *.sublime-project
 *.sublime-workspace
