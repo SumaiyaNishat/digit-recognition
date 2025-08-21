@@ -11,6 +11,7 @@ env/
 data/
 
 # Model files
+temp_auto_push.bat
 models/
 
 # Prediction logs / outputs
@@ -21,7 +22,8 @@ outputs/
 Thumbs.db
 
 # IDE/editor files
-.vscode/
 *.idea/
 *.sublime-project
 *.sublime-workspace
+.gitignore
+temp_interactive_push.bat
