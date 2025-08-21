@@ -23,7 +23,7 @@ PIX_COLS = [f"pix{i}" for i in range(64)]
 class DigitRecognizerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("📊 Digit Recognizer — Advanced")
+        self.root.title("Digit Recognizer")
         self.root.geometry("820x600")
         self.low_conf_threshold = 80.0  # % below which we ask user to confirm/correct
 
@@ -175,7 +175,7 @@ class DigitRecognizerApp:
         acc = accuracy_score(y_test, model.predict(X_test)) * 100.0
 
 
-        self._status(f"✅ Model trained (Accuracy: {acc:.2f}%)")
+        self._status(f"Model trained (Accuracy: {acc:.2f}%)")
         self._log(f"Model trained successfully! Test Accuracy: {acc:.2f}%  | Samples: {len(df)}")
 
 
@@ -223,13 +223,13 @@ class DigitRecognizerApp:
 
         preds = model.predict(features_df.values)
         self._log(f"Predictions from {os.path.basename(file_path)} (first 50): {list(preds)[:50]}{'...' if len(preds) > 50 else ''}")
-        self._status(f"✅ Predictions complete ({len(preds)} rows)")
+        self._status(f"Predictions complete ({len(preds)} rows)")
 
 
     # ------------------- Draw / Upload Window -------------------
     def open_draw_window(self):
         win = tk.Toplevel(self.root)
-        win.title("✍️ Draw or Upload Digit")
+        win.title("Draw or Upload Digit")
         win.geometry("460x520")
 
 
@@ -243,7 +243,7 @@ class DigitRecognizerApp:
 
         # Drawing handler
         def paint(event):
-            r = 12  # brush radius
+            r = 10  # brush radius
             x1, y1, x2, y2 = event.x-r, event.y-r, event.x+r, event.y+r
             canvas.create_oval(x1, y1, x2, y2, fill="black", outline="black")
         canvas.bind("<B1-Motion>", paint)
